@@ -1,5 +1,5 @@
 # forumFront
-校园论坛前端项目
+springboot+vue校园论坛前端项目
 ## Project setup
 ```
 npm install
