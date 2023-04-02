@@ -1,6 +1,6 @@
 # forumFront
 springboot+vue校园论坛前端项目  
-技术栈： 
+技术栈：  
 vue2  
 vuex  
 vue-router  
