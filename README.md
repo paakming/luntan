@@ -1,15 +1,15 @@
 # forumFront
-springboot+vue校园论坛前端项目
-技术栈：
-vue
-vuex
-vue-router
-axios
-elementui
-antd-vue
-echarts
-wangeditor
-后端项目：https://github.com/paakming/forum
+springboot+vue校园论坛前端项目  
+技术栈： 
+vue2  
+vuex  
+vue-router  
+axios  
+elementui  
+antd-vue  
+echarts  
+wangeditor  
+后端项目：https://github.com/paakming/forum  
 ## Project setup
 ```
 npm install
