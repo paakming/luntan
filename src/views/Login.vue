@@ -3,33 +3,37 @@
     <div style="margin: 180px auto;background-color: #ffffff;width: 350px;height: 350px;padding: 20px;border-radius: 10px">
       <div style="margin: 20px 0;text-align: center;font-size: 24px"><b>登 录</b></div>
       <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="54px" class="demo-ruleForm">
-        <el-form-item label="账号"  prop="account">
+        <el-form-item label="用户名"  prop="account">
           <el-input type="text"  v-model="ruleForm.account" prefix-icon="el-icon-user" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="pass">
-          <el-input type="password" v-model="ruleForm.pass" prefix-icon="el-icon-lock" autocomplete="off"></el-input>
+          <el-input type="password" v-model="ruleForm.pass" show-password prefix-icon="el-icon-lock" autocomplete="off"></el-input>
         </el-form-item>
         <div >
           <div >
             <el-form-item label="验证码" prop="code" style="float: left;z-index: 11;position: relative;">
               <el-input  type="text" v-model="ruleForm.code" style="width:100px;float: left;"></el-input>
             </el-form-item>
+            
           </div>
           <div style="float: right;z-index: 11;position: relative;" @click="get()">
-            <img  :src="showCode()" width="120px" height="30px" @dragstart.prevent />
+            <img  :src="showCode()" width="120px" height="30px" @dragstart.prevent /><br/>
+            <span class="tips">点击图片更换验证码</span>
           </div>
         </div>
         <el-form-item>
           <el-button size="medium" type="primary" class="btn" @click="submitForm('ruleForm')">登录</el-button>
-          <!-- <a href="javascript:;" style="font-size: 12px;" @click="register">注册账号</a> -->
         </el-form-item>
       </el-form>
+      <div style="float: right">
+        <el-button type="text" @click="register">注册</el-button> 
+        <el-button type="text" @click="forget">忘记密码</el-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-
 export default {
     data() {
     var validatePass = (rule, value, callback) => {
@@ -76,50 +80,52 @@ export default {
   methods: {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
-        var jobid = this.ruleForm.account
+        var username = this.ruleForm.account
         var password = this.ruleForm.pass
         let verifyCode = this.ruleForm.code
         let uuid = this.uuid
         if (valid) {
           this.request.post("/checkVerify/"+verifyCode+"/"+uuid).then((res) => {
-            console.log(res)
-            if(res.code != '200'){
+            if(res.code =='2000'){
+                this.request.post("/login",{
+                  username: username,
+                  password: password
+              }).then((res) => {
+                if(res.code=='2000'){
+                  localStorage.setItem("token",JSON.stringify(res.data.token))
+                  localStorage.setItem("user",JSON.stringify(res.data.user))
+                  localStorage.setItem("permission",JSON.stringify(res.data.permission))
+                  localStorage.setItem("path",JSON.stringify(res.data.path))
+                  localStorage.setItem("component",JSON.stringify(res.data.component))
+                  this.$store.commit('updateUser',res.data.user)
+                  this.$store.commit('updatePermission',res.data.permission)
+                  this.$store.commit('updatePaths',res.data.path)
+                  this.$store.commit('updateComponent',res.data.component)
+                  this.$router.push('/home')
+                }else{
+                  this.$message({
+                    type:'error',
+                    message:res.msg
+                  })
+                  this.get()
+                }
+            })
+            }else{
               this.$message({
-                message: res.msg,
-                type: 'error'
+                    type:'error',
+                    message:res.msg
               })
+              this.get()
             }
-            if(res.code =='200'){
-              this.request.post("/login",{
-                username: jobid,
-                password: password
-            }).then((res) => {
-              localStorage.setItem("token",JSON.stringify(res.data.token))
-              localStorage.setItem("user",(res.data.user))
-              localStorage.setItem("permission",(res.data.permission))
-              if(res.code=='200'){
-                this.$router.go(-1)
-              }
-          }).catch((res)=>{
-            console.log(res)
           })
-
-            }
-          }).catch((err) => {
-            console.log('error')
-          });
-
         }
       });
     },
-    register(){
-      this.$router.push({path:"/register"})
-    },
     get(){
-      if(this.time==5){
-        this.$message('请勿频繁获取验证码')
-        return this.time -= 1;
-      }
+      // if(this.time==5){
+      //   this.$message('请勿频繁获取验证码')
+      //   return this.time -= 1;
+      // }
       this.request.get("/verifyCode").then(res=>{
         this.verifyCode = res.data.verifyCode
         this.uuid = res.data.uuid
@@ -128,10 +134,15 @@ export default {
     },
     showCode(){
       return "data:image/png;base64,"+this.verifyCode
+    },
+    register(){
+      this.$router.push('/register')
+    },
+    forget(){
+      this.$router.push('/forgetPwd')
     }
   },
   mounted(){
-    console.log(this.verifyCode)
     this.request.get("/verifyCode").then(res=>{
     this.verifyCode = res.data.verifyCode
     this.uuid = res.data.uuid
@@ -152,5 +163,10 @@ a{
   }
   .btn{
     width: 100%;
+  }
+  .tips{
+    float: right;
+    font-size: 1px;
+    color: #409EFF;
   }
 </style>

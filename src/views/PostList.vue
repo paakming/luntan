@@ -1,77 +1,17 @@
 <template>
   <div style="display: block; ">
-      <div style="display: block;float: left;position: relative;">
-        <img src="@/assets/logo.png"  alt=""/>
+      <div style="">
+        <img   src="@/assets/f83da47f13d148aab0af0af36b9e9ce7.png" style="width:100% ;height: 100%" />
       </div>
-      <div style="float: right;">
-        <el-button type="primary" @click="dialogFormVisible = true">发帖</el-button>
+      <div style="padding-left: 75px;border-bottom: 1px #C0C4CC solid;">
+        <el-link :underline="false" @click="load">全部帖子</el-link>&nbsp;
+        <el-link :underline="false" type="success" @click=selectByType(types[0])>学习</el-link>&nbsp;
+        <el-link :underline="false" type="primary" @click=selectByType(types[1])>欢乐</el-link>&nbsp;
+        <el-link :underline="false" type="warning" @click=selectByType(types[2])>生活</el-link>&nbsp;
+        <el-link :underline="false"  type="info" @click=selectByType(types[3])>其他</el-link>&nbsp;
       </div>
-      <div style="display: flex;">
-        <el-dialog title="发布帖子" :visible.sync="dialogFormVisible" width="60%">
-        <el-form :model="form">
-          <el-form-item label="标题" :label-width="formLabelWidth">
-            <el-input v-model="form.title" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="类型">
-            <el-select v-model="form.type" placeholder="请选择" :label-width="formLabelWidth">
-              <el-option label="学习" value="学习"></el-option>
-              <el-option label="生活" value="生活"></el-option>
-              <el-option label="欢乐" value="欢乐"></el-option>
-            </el-select>
-            </el-form-item>
-          <el-form-item label="内容" :label-width="formLabelWidth">
-            <div style="border: 1px solid #ccc;">
-                <Toolbar
-                    style="border-bottom: 1px solid #ccc"
-                    :editor="editor"
-                    :defaultConfig="toolbarConfig"
-                    :mode="mode"
-                />
-                <Editor
-                    style="height: 300px; overflow-y: hidden;"
-                    v-model="html"
-                    :defaultConfig="editorConfig"
-                    :mode="mode"
-                    @onCreated="onCreated"
-                />
-            </div>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addPost()">确 定</el-button>
-        </div>
-      </el-dialog>
-      </div>
-      <el-table :data="topTableData"  stripe v-loading="loading" v-if="(topTableData.length>0)" 
-              tooltip-effect="dark">
-          <el-table-column prop="type"  width="65">
-          <template slot-scope="scope">
-          <el-tag effect="plain"
-            :type="testTag(scope.row.type)"
-            disable-transitions>{{scope.row.type}}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="title"  >
-          <template slot-scope="scope" >
-            <el-link :href="`#/post/${scope.row.pid}`"  @click="test(scope.$index, scope.row)"  :underline="false">{{scope.row.title}}</el-link>
-          </template>
-      </el-table-column>
-      <el-table-column prop="pid" v-if="false">
-      </el-table-column>
-      <el-table-column prop="nickname"  label="发帖人" width="150">
-      </el-table-column>
-      <el-table-column prop="commentNum"  label="评论数" width="150">
-      </el-table-column>   
-      <el-table-column prop="createTime"  label="发帖时间" width="150">
-      </el-table-column>
-      <el-table-column prop="updateTime"  label="最后回复" width="150">
-      </el-table-column>
-    </el-table>
-    <el-table :data="tableData"  stripe v-loading="loading"
-              tooltip-effect="dark"
-              >
-              <!-- //@selection-change="handleSelectionChange" -->
+    <el-table :data="tableData"   v-loading="loading"
+              tooltip-effect="dark" :row-class-name="tableRowClassName">
       <el-table-column prop="type"  width="65">
           <template slot-scope="scope">
           <el-tag effect="plain"
@@ -79,27 +19,25 @@
             disable-transitions>{{scope.row.type}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="title"  >
+      <el-table-column prop="title" label="标题" >
           <template slot-scope="scope" >
             <el-link :href="`#/post/${scope.row.pid}`"  @click="test(scope.$index, scope.row)"  :underline="false">{{scope.row.title}}</el-link>
-            <!-- target="_blank"  -->
           </template>
       </el-table-column>
       <el-table-column prop="pid" v-if="false">
       </el-table-column>
-      <el-table-column prop="nickname"  width="150">
+      <el-table-column prop="nickname" label="发帖人" width="150">
       </el-table-column>
-      <el-table-column prop="commentNum" width="150">
+      <el-table-column prop="commentNum" label="评论数" width="150">
       </el-table-column>      
-      <el-table-column prop="createTime"  width="150">
+      <el-table-column prop="createTime"  label="发帖时间" width="150">
       </el-table-column>
-      <el-table-column prop="updateTime" width="150">
+      <el-table-column prop="updateTime" label="最后回复" width="150">
       </el-table-column>
     </el-table>
     <div style="padding: 10px 0">
       <div class="block">
         <el-pagination
-            @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="pageNum"
             :page-size="pageSize"
@@ -108,108 +46,107 @@
         </el-pagination>
       </div>
     </div>
-
   </div>
 </template>
-<style src="@wangeditor/editor/dist/css/style.css"></style>
 <script>
-import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
+
 export default {
-  components:{
-        Editor,
-        Toolbar
-    },
     data(){
         return{
-            loading:false,
-            tableData: [],
-            topTableData:[],
-            pageNum:1,
-            pageSize:10,
-            total: 0,
-            dialogFormVisible:false,
-            formLabelWidth: '50px',
-            form:{},
-            editor: null,
-            html: '',
-            toolbarConfig: {
-              excludeKeys:[
-                    'todo',
-                    'group-video',
-                    'fullScreen',
-                    'undo',
-                    'redo',
-                    'group-indent',
-                    "bulletedList", // 无序列表
-                    "numberedList", // 有序列表
-                    'group-justify'
-                ]
-             },
-            editorConfig: {
-                placeholder: '请输入内容...',
-                MENU_CONF:{
-                    uploadImage:{
-                        fieldName:'file',
-                        server:'http://localhost:8080/img/upload',
-                        maxFileSize: 10 * 1024 * 1024
-                    }   
-                }
-            },
-            mode: 'default' // or 'simple'
+          types : ['学习','欢乐','生活','其他'],
+          loading:true,
+          tableData: [],
+          topTableData:[],
+          pageNum:1,
+          pageSize:10,
+          total: 0,
+          dialogFormVisible:false,
+          formLabelWidth: '50px',
+          form:{},
+          user:this.$store.state.user
         }
     },
     methods:{
-        test(index, row) {
-            console.log(row)
-            // this.$router.push({path:`/post/${row.pid}`})
-        },
         testTag(tag){
           switch(tag){
             case '欢乐': return ''
-            case '生活': return 'info'
+            case '生活': return 'warning'
             case '学习': return 'success'
+            case '其他': return 'info'
           }
-        },
-        addPost(){
-          let title = this.form.title
-          let type = this.form.type
-          let content = this.html
-          this.dialogFormVisible = false
-          this.request.post('/post',{"title":title,"content":content,"type":type}).then((res) => {
-            console.log(res.data)
-          }).catch((err) => {
-            
-          });
-        },
-        handleSizeChange(pageSize){
-        this.pageSize = pageSize
-          this.load
         },
         handleCurrentChange(pageNum){
           this.pageNum = pageNum
           this.load()
         },
         load(){
-          this.request.get(`/post?pageNum=${this.pageNum}&pageSize=${this.pageSize}`).then((res) => {
+            this.request.get(`/post?pageNum=${this.pageNum}&pageSize=${this.pageSize}`).then((res) => {
             this.tableData = res.data.post
             this.total = res.data.total
-            this.topTableData = res.data.top
-        }).catch((err) => {
-            
-        });
+            this.loading = false
+          })
+
         },
-        onCreated(editor) {
-            this.editor = Object.seal(editor) // 一定要用 Object.seal() ，否则会报错
+        selectByType(types){
+          this.request.post(`/post/selectByType?pageNum=${this.pageNum}&pageSize=${this.pageSize}`,{"type":types}).then((res) => {
+            this.tableData = res.data.post
+            this.total = res.data.total
+          })
         },
+        tableRowClassName({row, rowIndex}) {
+        if (row.isTop=='1') {
+          return 'danger-row';
+        }
+      },
     },
     mounted(){
       this.load()
+      let paths = this.$store.state.paths
+      let com = this.$store.state.components
+      let permission = this.$store.state.permission
+      let uid = this.$store.state.user.uid
+      if(paths==undefined||paths.length==0||com==undefined||com.length==0||permission==undefined||permission.length==0){
+        this.$notify({
+          title: '系统提示',
+          message: '请绑定学号或工号进行验证，否则您只能浏览帖子而不能回复和进行其他操作。',
+          duration:0,
+          onClick(){
+            this.$prompt('请输学号/工号', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+            }).then(({ value }) => {
+              this.request.post('/role/user',{"uid":uid,"identity":value}).then((res) => {
+                if(res.code===2000){
+                  this.$message({
+                    type:'success',
+                    message:'绑定成功'
+                  })
+                  localStorage.setItem("user",JSON.stringify(res.data.user))
+                  localStorage.setItem("permission",JSON.stringify(res.data.permission))
+                  localStorage.setItem("path",JSON.stringify(res.data.path))
+                  localStorage.setItem("component",JSON.stringify(res.data.component))
+                  location.reload()
+                }else{
+                  this.$message({
+                    type:'danger',
+                    message:'绑定失败'
+                  })
+                }
+              })
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '你还可以前往个人空间进行绑定'
+              });       
+            });
+          },
+          onClose(){
+            alert('你还可以前往个人空间进行绑定')
+          }
+        });
+      }
     },
-    beforeDestroy() {
-        const editor = this.editor
-        if (editor == null) return
-        editor.destroy() // 组件销毁时，及时销毁编辑器
-    }
+
 }
 </script>
 

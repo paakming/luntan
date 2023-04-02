@@ -1,5 +1,5 @@
 <template>
-  
+  <p >Campus Forum ©2023 Created by WBM</p>
 </template>
 
 <script>
