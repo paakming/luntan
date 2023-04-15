@@ -14,7 +14,7 @@
           end-placeholder="结束日期">
         </el-date-picker>
         <el-button type="primary"   @click="searchByTime">筛选注册时间</el-button>
-        <el-button type="primary"  @click="this.load">刷新</el-button>
+        <el-button type="primary"  @click="this.refresh">刷新</el-button>
     </div>
     <el-table :data="tableData" border stripe v-loading="loading"
               tooltip-effect="dark"
@@ -60,7 +60,6 @@
     <div style="padding: 10px 0">
       <div class="block">
         <el-pagination
-            @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="pageNum"
             :page-size="pageSize"
@@ -176,6 +175,7 @@ export default {
       tableData: [],
       pageNum:1,
       pageSize:10,
+      timePage:false,
       total: 0,
       dialogFormVisible: false,
       dialogFormVisibleAdd: false,
@@ -217,6 +217,13 @@ export default {
   },
   methods: {
     //获取user，分页
+    refresh(){
+      this.pageNum = 1
+      this.inputUid = ''
+      this.value1=[]
+      this.timePage = false
+      this.load()
+    },
     load(){
       this.request.get("/user/all",{params:{
           pageNum: this.pageNum,
@@ -227,13 +234,13 @@ export default {
         this.loading = false;
       })
     },
-    handleSizeChange(pageSize){
-      this.pageSize = pageSize
-      this.load()
-    },
     handleCurrentChange(pageNum){
       this.pageNum = pageNum
-      this.load()
+      if(this.timePage===true){
+        this.searchByTime()
+      }else {
+        this.load()
+      }
     },
 
     //删除
@@ -390,6 +397,7 @@ export default {
             return  true;
         },
         search(){
+          this.value1 = []
           if(this.inputUid.length<=0){
             this.$message({
               type:'warning',
@@ -402,6 +410,7 @@ export default {
           })
         },
         searchByTime(){
+          this.inputUid = ''
           if(this.value1<=0){
             this.$message({
               type:'warning',
@@ -415,6 +424,7 @@ export default {
           }).then((res) => {
             this.tableData = res.data.user
             this.total = res.data.total
+            this.timePage =true
           })
         }
   },

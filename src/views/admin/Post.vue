@@ -14,7 +14,7 @@
           end-placeholder="结束日期">
         </el-date-picker>
         <el-button type="primary"   @click="searchByTime">筛选发布时间</el-button>
-        <el-button type="primary"  @click="this.load">刷新</el-button>
+        <el-button type="primary"  @click="this.refresh">刷新</el-button>
     </div>
     <el-table :data="tableData" border  v-loading="loading"
               tooltip-effect="dark"
@@ -74,7 +74,6 @@
     <div style="padding: 10px 0">
       <div class="block">
         <el-pagination
-            @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page="pageNum"
             :page-size="pageSize"
@@ -143,6 +142,7 @@ export default {
     return {
       value1: '',
       inputPid:'',
+      timePage:false,
       loading: true,
       labelPosition: 'right',
       tableData: [],
@@ -218,6 +218,13 @@ export default {
           }
         },
     //获取分页
+    refresh(){
+      this.inputPid = ''
+      this.value1=[]
+      this.timePage = false
+      this.pageNum = 1
+      this.load()
+    },
     load(){
       this.request.get("/post",{params:{
           pageNum: this.pageNum,
@@ -235,13 +242,13 @@ export default {
       window.open(`http://localhost:8089/#/post/${pid}`)
     },
 
-    handleSizeChange(pageSize){
-      this.pageSize = pageSize
-      this.load()
-    },
     handleCurrentChange(pageNum){
       this.pageNum = pageNum
-      this.load()
+      if(this.timePage===true){
+        this.searchByTime()
+      }else {
+        this.load()
+      }
     },
     addPost(){
       this.$refs['form'].validate((valid)=>{
@@ -342,6 +349,7 @@ export default {
       })
     },
     search(){
+      this.value1=[]
       if(this.inputPid.length<=0){
             this.$message({
               type:'warning',
@@ -354,6 +362,7 @@ export default {
       })
     },
     searchByTime(){
+      this.inputPid = ''
       if(this.value1<=0){
             this.$message({
               type:'warning',
@@ -367,6 +376,7 @@ export default {
       }).then((res) => {
         this.tableData = res.data.post
         this.total = res.data.total
+        this.timePage = true
       })
     }
   },

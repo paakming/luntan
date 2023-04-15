@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <el-select v-model="role" placeholder="请选择" @change="selectByName">
+    <el-select v-model="role" placeholder="请选择" @change="afterSelect">
         <el-option label="超级管理员" value="1"> </el-option>
         <el-option label="普通用户" value="2"> </el-option>
         <el-option label="管理员" value="3"> </el-option>
@@ -59,27 +59,7 @@
       </el-table>
     </el-drawer>
   </el-main>
-      <!-- <el-button type="primary" @click="drawer = true">编辑角色权限</el-button> -->
-    <!-- <el-table :data="tableData" border  v-loading="loading"
-              tooltip-effect="dark"
-              :span-method="objectSpanMethod"
-              :row-style="{height:'20px'}"
-              :cell-style="{padding:'0px'}"
-              style="font-size: 10px"
-              >
-      <el-table-column prop="roleName" label="角色名称"  header-align="center" align="center">
-      </el-table-column>
-      <el-table-column prop="menuId" label="menuId"  align="center" >
-      </el-table-column>
-      <el-table-column prop="menuName"  label="菜单名称" header-align="center" align="center">
-      </el-table-column>
-      <el-table-column prop="path"  label="路劲" header-align="center" align="center">
-      </el-table-column>
-      <el-table-column prop="component"  label="组件" header-align="center" align="center">
-      </el-table-column>
-      <el-table-column prop="perm"  label="权限" header-align="center" align="center">
-      </el-table-column>
-    </el-table> -->
+
 </template>
 <script>
 
@@ -133,6 +113,10 @@ export default {
         this.drawer2 = true
         this.getMenu()
       },
+      afterSelect(){
+        this.pageNum = 1
+        this.selectByName()
+      },
       selectByName(){
         this.request.get(`/menu/role/${this.role}/${this.pageNum}/${this.pageSize}`).then((res) => {
           if(res.code===2000){
@@ -178,57 +162,9 @@ export default {
       this.selectByName()
     },
   },
-  mounted() {
-    // setTimeout(() => {
-    //   this.onMergeLines()}, 1000)
-   
-  },
-  created(){
-    //this.load() 
-  }
 }
-    
-  //   onMergeLines(){
-  //     this.tableData.forEach((item, index) => {
-  //      if (index === 0) {
-  //          this.spanArr.push(1);
-  //          this.position = 0;
-  //      } else {
-  //         // 判断当前元素与上一个元素是否相同
-  //         if (this.tableData[index].roleName === this.tableData[index - 1].roleName) {
-  //             this.spanArr[this.position] += 1;
-  //             this.spanArr.push(0);
-  //          } else {
-  //             this.spanArr.push(1);
-  //             this.position = index;
-  //          }
-  //     }
-  //  })   
-  //   },
-    // objectSpanMethod({rowIndex,columnIndex}) { 
-    //     if (columnIndex === 0) {
-    //     const _row = this.spanArr[rowIndex];
-    //     const _col = _row > 0 ? 1 : 0;
-    //     return {
-    //         rowspan: _row,
-    //         colspan: _col
-    //     };
-    // }
 
-    //   },
-        // load(){
-    //   this.request.get("/role/menu",{params:{
-    //       // pageNum: this.pageNum,
-    //       // pageSize:this.pageSize
-    //     }}).then((res)=>{
-    //     this.tableData = res.data
-    //     // this.total = res.data.total
-    //     this.loading = false;
-    //   })
-    // },
 </script>
-
-
 
 <style scoped>
 
