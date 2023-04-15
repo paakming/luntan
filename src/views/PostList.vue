@@ -104,46 +104,47 @@ export default {
       let paths = this.$store.state.paths
       let com = this.$store.state.components
       let permission = this.$store.state.permission
-      let uid = this.$store.state.user.uid
+      //let uid = this.$store.state.user.uid
       if(paths==undefined||paths.length==0||com==undefined||com.length==0||permission==undefined||permission.length==0){
-        this.$notify({
-          title: '系统提示',
-          message: '请绑定学号或工号进行验证，否则您只能浏览帖子而不能回复和进行其他操作。',
-          duration:0,
-          onClick(){
-            this.$prompt('请输学号/工号', '提示', {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-            }).then(({ value }) => {
-              this.request.post('/role/user',{"uid":uid,"identity":value}).then((res) => {
-                if(res.code===2000){
-                  this.$message({
-                    type:'success',
-                    message:'绑定成功'
-                  })
-                  localStorage.setItem("user",JSON.stringify(res.data.user))
-                  localStorage.setItem("permission",JSON.stringify(res.data.permission))
-                  localStorage.setItem("path",JSON.stringify(res.data.path))
-                  localStorage.setItem("component",JSON.stringify(res.data.component))
-                  location.reload()
-                }else{
-                  this.$message({
-                    type:'danger',
-                    message:'绑定失败'
-                  })
-                }
-              })
-            }).catch(() => {
-              this.$message({
-                type: 'info',
-                message: '你还可以前往个人空间进行绑定'
-              });       
-            });
-          },
-          onClose(){
-            alert('你还可以前往个人空间进行绑定')
-          }
-        });
+        this.$router.push('/nopermission')
+        // this.$notify({
+        //   title: '系统提示',
+        //   message: '请绑定学号或工号进行验证，否则您只能浏览帖子而不能回复和进行其他操作。',
+        //   duration:0,
+        //   onClick(){
+        //     this.$prompt('请输学号/工号', '提示', {
+        //       confirmButtonText: '确定',
+        //       cancelButtonText: '取消',
+        //     }).then(({ value }) => {
+        //       this.request.post('/role/user',{"uid":uid,"identity":value}).then((res) => {
+        //         if(res.code===2000){
+        //           this.$message({
+        //             type:'success',
+        //             message:'绑定成功'
+        //           })
+        //           localStorage.setItem("user",JSON.stringify(res.data.user))
+        //           localStorage.setItem("permission",JSON.stringify(res.data.permission))
+        //           localStorage.setItem("path",JSON.stringify(res.data.path))
+        //           localStorage.setItem("component",JSON.stringify(res.data.component))
+        //           location.reload()
+        //         }else{
+        //           this.$message({
+        //             type:'danger',
+        //             message:'绑定失败'
+        //           })
+        //         }
+        //       })
+        //     }).catch(() => {
+        //       this.$message({
+        //         type: 'info',
+        //         message: '你还可以前往个人空间进行绑定'
+        //       });       
+        //     });
+        //   },
+        //   onClose(){
+        //     alert('你还可以前往个人空间进行绑定')
+        //   }
+        // });
       }
     },
 

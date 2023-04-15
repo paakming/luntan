@@ -43,7 +43,7 @@
             <el-input v-model="form.uid" :disabled="true" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="角色" :label-width="formLabelWidth">
-            <el-select v-model="form.role" placeholder="请选择角色">
+            <el-select v-model="form.role" :placeholder="form.roleName">
               <el-option label="超级管理员" value="1"> </el-option>
               <el-option label="普通用户" value="2"> </el-option>
               <el-option label="管理员" value="3"> </el-option>
@@ -98,6 +98,10 @@ export default {
     edit(){
       let uid = this.form.uid
       let roleId = this.form.role
+      if(roleId===undefined){
+        this.dialogVisibleEdit = false
+        return;
+      }
       this.request.put(`/role/${uid}/${roleId}`).then((res) => {
         this.dialogVisibleEdit = false
         if (res.code===2000){

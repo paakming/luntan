@@ -33,6 +33,11 @@ const routes = [
     component:()=>import('@/views/ForgetPwd.vue')
   },
   {
+    path:'/nopermission',
+    name:'/nopermission',
+    component:()=>import('@/views/NoPermission.vue')
+  },
+  {
     path: '/home',
     component:()=>import('@/views/Home.vue'),
     children:[
@@ -68,7 +73,23 @@ const routes = [
           },
         ]
       },
-    ]
+    ],
+    beforeEnter:((to,from,next)=>{
+      let paths = localStorage.getItem("path") ? JSON.parse(localStorage.getItem("path")) : {}
+      if(paths.length<=0){
+        next({
+          path:'/nopermission'
+        })
+      }
+      if(paths.includes('/home')){
+        next()
+      }else {
+        next({
+          path:'/nopermission'
+        })
+      }
+      next()
+  })
   },
 
   {

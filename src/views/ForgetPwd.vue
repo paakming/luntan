@@ -46,13 +46,14 @@ export default {
                     { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
                 ],
                 code: [
-                    { message: '请输入验证码', trigger: 'blur' ,required:true,len:6},
+                    { message: '请输入验证码', trigger: 'blur' ,len:6},
                 ],
                 username: [
                     {message: '请输入用户名',trigger: 'blur',required: true},
                 ],
                 password: [
-                    {message: '请输入密码', trigger: 'blur' ,required:true}
+                    {message: '请输入新密码', trigger: 'blur' ,required:true},
+                    { min:6,max:10, message: '请正确输入密码，长度为6-10位', trigger: ['blur', 'change'] }
                 ],
             }
         }
@@ -62,24 +63,36 @@ export default {
             this.$router.push('/')
         },
         getCode(){
-            let email = this.ruleForm.email
-            if(email == null ||email.length==0){
-                this.$notify({
-                    title: '错误',
-                    message: '请正确输入邮箱地址',
-                    type: 'error'
-                });
-                return ;
-            }
-            this.request.get(`/email?emailReceiver=${email}`).then((res) => {
-                if(res.code=='200'){
-                    this.$notify({
-                        title: '成功',
-                        message: res.msg,
-                        type: 'success'
-                    });
+            // let email = this.ruleForm.email
+            // if(email == null ||email.length==0){
+            //     this.$notify({
+            //         title: '错误',
+            //         message: '请正确输入邮箱地址',
+            //         type: 'error'
+            //     });
+            //     return ;
+            // }
+            this.$refs['ruleForm'].validate(valid=>{
+                if(valid){
+                    this.request.get(`/email?emailReceiver=${this.ruleForm.email}`).then((res) => {
+                        if(res.code==2000){
+                            this.$notify({
+                                title: '成功',
+                                message: res.msg,
+                                type: 'success'
+                            });
+                        }
+                        if(res.code==5000){
+                            this.$notify({
+                                title: '失败',
+                                message: res.msg,
+                                type: 'error'
+                            });
+                        }
+                    })
                 }
             })
+
         },
         submitForm(formName){
             this.$refs[formName].validate((valid)=>{
@@ -97,7 +110,7 @@ export default {
                         if(res.code==2000){
                             this.$notify({
                                 title: '成功',
-                                message: res.msg,
+                                message: '修改成功',
                                 type: 'success'
                             });
                             this.$router.push('/')

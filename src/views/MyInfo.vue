@@ -41,13 +41,13 @@
               </el-upload>
           </el-form-item>
           <el-form-item label="昵称"  prop="nickname">
-            <el-input v-model="form.nickname"  autocomplete="off" ></el-input>
+            <el-input v-model.trim="form.nickname"  autocomplete="off" ></el-input>
           </el-form-item>
           <el-form-item label="用户名">
-            <el-input v-model="form.username"  autocomplete="off" :disabled="true" ></el-input>
+            <el-input v-model.trim="form.username"  autocomplete="off" :disabled="true" ></el-input>
           </el-form-item>
           <el-form-item label="uid" >
-            <el-input v-model="form.uid" autocomplete="off" :disabled="true"></el-input>
+            <el-input v-model.trim="form.uid" autocomplete="off" :disabled="true"></el-input>
           </el-form-item>
           <el-form-item label="性别">
           <el-radio-group v-model="form.sex">
@@ -60,10 +60,10 @@
             <el-date-picker type="date" value-format="yyyy-MM-dd" placeholder="选择日期" v-model="form.birthday" style="width: 100%;"></el-date-picker>
           </el-form-item>
           <el-form-item label="手机"  prop="phone">
-            <el-input v-model="form.phone" autocomplete="off" ></el-input>
+            <el-input v-model.trim="form.phone" autocomplete="off" ></el-input>
           </el-form-item>
           <el-form-item label="邮箱" prop="email">
-            <el-input v-model="form.email" autocomplete="off" ></el-input>
+            <el-input v-model.trim="form.email" autocomplete="off" ></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -97,24 +97,24 @@
 <script>
 export default {
     data(){
-      var validateOldPwd = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入旧密码'));
-        }
-        callback()
-      };
-      var validateNewPwd = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请输入新密码'));
-        }
-        callback()
-      };
-      var validateRePwd = (rule, value, callback) => {
-        if (value === '') {
-          callback(new Error('请重复输入新密码'));
-        }
-        callback()
-      };
+      // var validateOldPwd = (rule, value, callback) => {
+      //   if (value === '') {
+      //     callback(new Error('请输入旧密码'));
+      //   }
+      //   callback()
+      // };
+      // var validateNewPwd = (rule, value, callback) => {
+      //   if (value === '') {
+      //     callback(new Error('请输入新密码'));
+      //   }
+      //   callback()
+      // };
+      // var validateRePwd = (rule, value, callback) => {
+      //   if (value === '') {
+      //     callback(new Error('请重复输入新密码'));
+      //   }
+      //   callback()
+      // };
         return{
             user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : {},
             imgUrl: '',
@@ -123,7 +123,7 @@ export default {
             dialogVisible: false,
             dialogVisiblePwd: false,
             formLabelWidth: '60px',
-            formLabelWidthPwd:'70px',
+            formLabelWidthPwd:'80px',
             form:'',
             formPwd: {
               oldPwd: '',
@@ -132,13 +132,19 @@ export default {
           },
           rules: {
             oldPwd: [
-              { validator: validateOldPwd, trigger: 'blur' }
+             // { validator: validateOldPwd, trigger: 'blur' }
+             {message: '请输入旧密码',trigger: 'blur',required: true},
+             { min:6,max:10, message: '请正确输入密码，长度为6-10位', trigger: ['blur', 'change'] }
             ],
             newPwd: [
-              {validator: validateNewPwd, trigger: 'blur'}
+              //{validator: validateNewPwd, trigger: 'blur'}
+              {message: '请输入新密码',trigger: 'blur',required: true},
+              { min:6,max:10, message: '请正确输入密码，长度为6-10位', trigger: ['blur', 'change'] }
             ],
             repeatPwd:[
-              {validator: validateRePwd, trigger: 'blur'}
+              //{validator: validateRePwd, trigger: 'blur'}
+              {message: '请重复输入新密码',trigger: 'blur',required: true},
+              { min:6,max:10, message: '请正确输入密码，长度为6-10位', trigger: ['blur', 'change'] }
             ],
             nickname:[
                 {message: '请输入昵称',trigger: 'blur',required: true},
@@ -152,6 +158,7 @@ export default {
             ],
             phone:[
                 {message: '请输入手机号',trigger: 'blur',required: true},
+                {pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: ['blur', 'change'] }
             ],
           }
         }
@@ -164,36 +171,40 @@ export default {
             this.orginName = this.form.nickname
         },
         editInfo(){
-          if(this.orginName===this.form.nickname){
-              this.form.nickname = null
-          }
-          let nickname = this.form.nickname
-          let sex = this.form.sex
-          let phone = this.form.phone
-          let birthday = new Date(this.form.birthday)
-          let email = this.form.email
-          let avatar = this.form.avatar
-            this.request.put('/user',{
-              "uid":this.form.uid,
-              "nickname": nickname,
-              "sex": sex,
-              "phone":phone,
-              "birthday":birthday,
-              "email":email,
-              "avatar":avatar
-            }).then((res)=>{
-                this.dialogVisible = false
-                if (res.code==2000){
-                this.$message({
-                    message:res.msg,
-                    type:"success"
-                })
-                localStorage.setItem("user",JSON.stringify(res.data)) 
-                this.$router.go(0) 
-                }else {
-                this.$message({
-                    message:res.msg,
-                    type:"error"
+          // if(this.orginName===this.form.nickname){
+          //     this.form.nickname = null
+          // }
+          this.$refs['form'].validate((vaild)=>{
+            if(vaild){
+              let nickname = this.form.nickname
+              let sex = this.form.sex
+              let phone = this.form.phone
+              let birthday = new Date(this.form.birthday)
+              let email = this.form.email
+              let avatar = this.form.avatar
+                this.request.put('/user',{
+                  "uid":this.form.uid,
+                  "nickname": nickname,
+                  "sex": sex,
+                  "phone":phone,
+                  "birthday":birthday,
+                  "email":email,
+                  "avatar":avatar
+                }).then((res)=>{
+                    this.dialogVisible = false
+                    if (res.code==2000){
+                    this.$message({
+                        message:res.msg,
+                        type:"success"
+                    })
+                    localStorage.setItem("user",JSON.stringify(res.data)) 
+                    this.$router.go(0) 
+                    }if(res.code===5000) {
+                    this.$message({
+                        message:res.msg,
+                        type:"error"
+                    })
+                    }
                 })
                 }
             })
@@ -216,19 +227,33 @@ export default {
               type: 'warning'
             });
             }
+            if(newPWd === oldPwd){
+              flag = false
+              this.$message({
+                message: '新旧密码不能一样',
+                type: 'warning'
+              });
+            }
             if(vaild && flag){
               this.request.post('/user/changPwd',{
                 "oldPassword":oldPwd,
                 "newPassword":newPWd,
                 "repeatPassword":RePwd
               }).then((res) => {
-                if(res.code =='200'){
-                  this.$notify({
+                if(res.code ===2000){
+                  this.$message({
                     message: res.msg,
                     type: 'success'
                   });     
-                  this.$router.push('/')
                   localStorage.clear()
+                  this.$router.push('/')
+
+                }
+                if(res.code===5000){
+                  this.$message({
+                    message: res.msg,
+                    type: 'error'
+                  }); 
                 }
               })
             }

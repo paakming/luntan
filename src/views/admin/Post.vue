@@ -86,7 +86,7 @@
 
     <!--发帖-->
     <div style="display: flex;">
-        <el-dialog title="发布帖子" :visible.sync="dialogFormVisible" width="60%">
+        <el-dialog title="发布帖子" :visible.sync="dialogFormVisible" width="60%" :close-on-click-modal="false">
         <el-form :model="form" :labelPosition="labelPosition"  :label-width="formLabelWidth" :rules="rules" ref="form">
           <el-form-item label="标题" prop="title">
             <el-input v-model.trim="form.title" autocomplete="off"></el-input>

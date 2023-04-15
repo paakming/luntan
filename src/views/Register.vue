@@ -45,7 +45,8 @@ export default {
                     {message: '请输入用户名',trigger: 'blur',required: true},
                 ],
                 password: [
-                    {message: '请输入密码', trigger: 'blur' ,required:true}
+                    {message: '请输入密码', trigger: 'blur' ,required:true},
+                    { min:6,max:10, message: '密码长度为6-10位', trigger: ['blur', 'change'] }
                 ],
                 nickname: [
                     {message: '请输入昵称', trigger: 'blur' ,required:true}
@@ -76,7 +77,8 @@ export default {
                                 type: 'success'
                             });
                             this.$router.push('/')
-                        }else {
+                        }
+                        if(res.code===5000) {
                             this.$message({
                                 type:'error',
                                 message:res.msg

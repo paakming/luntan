@@ -157,7 +157,9 @@ export default {
             
         },
         reply(){
-            if(this.html===''||this.html===null||this.html==='<p><br></p>'){
+            var str = this.html.trim().replace(/<[^<>]+>/g, "").replace(/&nbsp;/gi, "");
+            //this.html===''||this.html===null||this.html==='<p><br></p>'||
+            if( str.trim()==""){
                 this.$message({
                 showClose: true,
                 message: '回复不能为空',

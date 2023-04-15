@@ -151,10 +151,14 @@
           <el-form-item label="生日" prop="birthday" value-format="yyyy-MM-dd">
             <el-date-picker type="date" value-format="yyyy-MM-dd" placeholder="选择日期" v-model="formAdd.birthday" style="width: 100%;"></el-date-picker>
           </el-form-item>
+          <span style="font-size: 8px;color: #909399;margin-left: 50px;" class="el-icon-info">默认密码为“000000”</span>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="clearDialog">取 消</el-button>
           <el-button type="primary" @click="insert">确 定</el-button>
+          <!-- <el-tooltip  effect="light" content="默认密码为“000000”" placement="right">
+          <i class="el-icon-info"></i>
+        </el-tooltip> -->
         </div>
       </el-dialog>
     </div>
@@ -200,6 +204,7 @@ export default {
         ],
         phone:[
             {message: '请输入手机号',trigger: 'blur',required: true},
+            {pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: ['blur', 'change'] }
         ],
         sex:[
             {message: '请选择性别',trigger: 'blur',required: true},

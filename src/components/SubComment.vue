@@ -15,7 +15,7 @@
     <span slot="content" v-if="sub.targetName!=null">回复 {{sub.targetName }} ：</span>
     <span slot="content">  {{ sub.content }}  </span>
     <el-form v-if="showReply2" style="width: 100%;height: 100px;">
-            <el-input type="textarea"   :rows="2"  placeholder="请输入内容"   v-model="textarea"> </el-input>
+            <el-input type="textarea"   :rows="2"  placeholder="请输入内容"   v-model.trim="textarea"> </el-input>
             <el-button type="primary" size="mini" style="float: right;" @click="SubReply(sub.replyId,sub.rootId)" >发表</el-button>
         </el-form>
     </a-comment>    

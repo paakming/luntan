@@ -20,13 +20,13 @@
           <i class="el-icon-user-solid"></i>
           <span slot="title">用户管理</span>
         </el-menu-item>
-        <el-submenu index="1">
+        <el-submenu  v-if="have(paths,['/management/role','/management/menu'])" index="0">
           <template slot="title">
             <i class="el-icon-menu"></i>
             <span>权限管理</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="/management/role">用户角色</el-menu-item>
+            <el-menu-item index="/management/role" >用户角色</el-menu-item>
             <el-menu-item index="/management/menu">角色权限</el-menu-item>
           </el-menu-item-group>
       </el-submenu>
@@ -43,6 +43,25 @@ export default {
   name: "Aside",
   props:{
     isCollapse: Boolean
+  },
+  data(){
+    return{
+      paths:this.$store.state.paths,
+    }
+  },
+  methods: {
+    have(arr,p){
+      var flag = false
+      for(var i =0;i<p.length;i++){
+        if(arr.includes(p[i])){
+          flag = true
+        }
+      }
+      return  flag
+    }   
+  },
+  mounted(){
+    //this.paths = this.$store.state.paths
   }
 }
 </script>
